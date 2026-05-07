@@ -1,1 +1,6 @@
-<Solution />
+<Solution>
+  <Project Path="ElectronicLibrary.Core/ElectronicLibrary.Core.csproj" />
+  <Project Path="ElectronicLibrary.Infrastructure/ElectronicLibrary.Infrastructure.csproj" />
+  <Project Path="ElectronicLibrary.Tests/ElectronicLibrary.Tests.csproj" />
+  <Project Path="ElectronicLibrary.WebUI/ElectronicLibrary.WebUI.csproj" />
+</Solution>

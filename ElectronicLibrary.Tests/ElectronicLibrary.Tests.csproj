@@ -15,6 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ElectronicLibrary.Core\ElectronicLibrary.Core.csproj" />
+    <ProjectReference Include="..\ElectronicLibrary.Infrastructure\ElectronicLibrary.Infrastructure.csproj" />
+    <ProjectReference Include="..\ElectronicLibrary.WebUI\ElectronicLibrary.WebUI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 
