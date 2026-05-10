@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ElectronicLibrary.Core.Entities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,4 +13,5 @@ public class Reader
     public string Email { get; set; } = string.Empty;
 
     public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
+    public ICollection<Loan> Loans { get; set; } = new List<Loan>();
 }

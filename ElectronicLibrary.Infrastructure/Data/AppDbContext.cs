@@ -1,25 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using ElectronicLibrary.Core.Entities;
+﻿using ElectronicLibrary.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 
-namespace ElectronicLibrary.Infrastructure.Data
+namespace ElectronicLibrary.Infrastructure.Data;
+
+public class AppDbContext : DbContext
 {
-
-    public class AppDbContext : DbContext
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
-        {
-        }
+    }
 
-        public DbSet<Book> Books { get; set; }
-        public DbSet<Reader> Readers { get; set; }
+    public DbSet<Book> Books { get; set; }
+    public DbSet<Reader> Readers { get; set; }
+    public DbSet<Loan> Loans { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-        }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Loan>()
+            .HasOne(l => l.Book)
+            .WithMany(b => b.Loans)
+            .HasForeignKey(l => l.BookId);
+
+        modelBuilder.Entity<Loan>()
+            .HasOne(l => l.Reader)
+            .WithMany(r => r.Loans)
+            .HasForeignKey(l => l.ReaderId);
     }
 }

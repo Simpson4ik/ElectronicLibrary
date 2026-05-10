@@ -12,4 +12,9 @@ public interface IBookService
 {
     Task<IEnumerable<Book>> GetBooksAsync(ISortStrategy sortStrategy);
     Task BorrowBookAsync(int bookId);
+
+    /// <summary>
+    /// Реєструє повернення книги в бібліотеку, закриваючи активний запис про видачу.
+    /// </summary>
+    Task ReturnBookAsync(int bookId);
 }

@@ -22,5 +22,6 @@ public class Book
     public bool IsAvailable { get; set; } = true;
 
     public DateTime AddedDate { get; set; } = DateTime.UtcNow;
+    public ICollection<Loan> Loans { get; set; } = new List<Loan>();
 }
 

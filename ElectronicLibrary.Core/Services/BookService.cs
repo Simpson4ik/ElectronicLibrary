@@ -3,6 +3,7 @@ using ElectronicLibrary.Core.Interfaces;
 using ElectronicLibrary.Core.Strategies;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ElectronicLibrary.Core.Services;
@@ -30,15 +31,46 @@ public class BookService : IBookService
     {
         var book = await _unitOfWork.Books.GetByIdAsync(bookId);
 
-        if (book == null)
-            throw new ArgumentException("Книгу не знайдено в системі.");
+        if (book == null) throw new ArgumentException("Книгу не знайдено.");
+        if (!book.IsAvailable) throw new InvalidOperationException("Книга вже видана.");
 
-        if (!book.IsAvailable)
-            throw new InvalidOperationException("Ця книга вже видана іншому читачу.");
+        var loan = new Loan
+        {
+            BookId = book.Id,
+            ReaderId = 1,
+            LoanDate = DateTime.UtcNow,
+            DueDate = DateTime.UtcNow.AddDays(14)
+        };
 
         book.IsAvailable = false;
 
+        await _unitOfWork.Loans.AddAsync(loan);
         await _unitOfWork.Books.UpdateAsync(book);
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Логіка повернення книги: оновлення статусу книги та закриття запису про видачу.
+    /// </summary>
+    // Principle: Atomicity - завдяки Unit of Work обидві операції (оновлення книги та логу) виконаються як одна транзакція.
+    public async Task ReturnBookAsync(int bookId)
+    {
+        var book = await _unitOfWork.Books.GetByIdAsync(bookId);
+        if (book == null) throw new ArgumentException("Книгу не знайдено.");
+
+        var loans = await _unitOfWork.Loans.GetAllAsync();
+        var activeLoan = loans.FirstOrDefault(l => l.BookId == bookId && l.ReturnDate == null);
+
+        if (activeLoan == null)
+            throw new InvalidOperationException("Ця книга зараз не рахується як видана.");
+
+        activeLoan.ReturnDate = DateTime.UtcNow;
+
+        book.IsAvailable = true;
+
+        await _unitOfWork.Loans.UpdateAsync(activeLoan);
+        await _unitOfWork.Books.UpdateAsync(book);
+
         await _unitOfWork.SaveChangesAsync();
     }
 }
