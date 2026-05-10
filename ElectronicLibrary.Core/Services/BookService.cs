@@ -1,4 +1,5 @@
-﻿using ElectronicLibrary.Core.Entities;
+﻿using ElectronicLibrary.Core.DTOs;
+using ElectronicLibrary.Core.Entities;
 using ElectronicLibrary.Core.Interfaces;
 using ElectronicLibrary.Core.Strategies;
 using System;
@@ -71,6 +72,63 @@ public class BookService : IBookService
         await _unitOfWork.Loans.UpdateAsync(activeLoan);
         await _unitOfWork.Books.UpdateAsync(book);
 
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task<BookDto?> GetBookDtoByIdAsync(int id)
+    {
+        var book = await _unitOfWork.Books.GetByIdAsync(id);
+        if (book == null) return null;
+
+        return new BookDto
+        {
+            Id = book.Id,
+            Title = book.Title,
+            Author = book.Author,
+            PublicationYear = book.PublicationYear,
+            Isbn = book.Isbn
+        };
+    }
+
+    public async Task AddBookAsync(BookDto bookDto)
+    {
+        var book = new Book
+        {
+            Title = bookDto.Title,
+            Author = bookDto.Author,
+            PublicationYear = bookDto.PublicationYear,
+            Isbn = bookDto.Isbn,
+            IsAvailable = true 
+        };
+
+        await _unitOfWork.Books.AddAsync(book);
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task UpdateBookAsync(BookDto bookDto)
+    {
+        var book = await _unitOfWork.Books.GetByIdAsync(bookDto.Id);
+        if (book == null) throw new ArgumentException("Книгу не знайдено.");
+
+        book.Title = bookDto.Title;
+        book.Author = bookDto.Author;
+        book.PublicationYear = bookDto.PublicationYear;
+        book.Isbn = bookDto.Isbn;
+
+        await _unitOfWork.Books.UpdateAsync(book);
+        await _unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task DeleteBookAsync(int id)
+    {
+        var book = await _unitOfWork.Books.GetByIdAsync(id);
+        if (book == null) throw new ArgumentException("Книгу не знайдено.");
+
+        var loans = await _unitOfWork.Loans.GetAllAsync();
+        if (loans.Any(l => l.BookId == id && l.ReturnDate == null))
+            throw new InvalidOperationException("Неможливо видалити книгу, яка зараз видана читачу.");
+
+        await _unitOfWork.Books.DeleteAsync(book);
         await _unitOfWork.SaveChangesAsync();
     }
 }
