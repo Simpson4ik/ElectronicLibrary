@@ -15,6 +15,8 @@ public class UnitOfWork : IUnitOfWork
     private readonly AppDbContext _context;
     private IRepository<Book>? _books;
     private IRepository<Reader>? _readers;
+    private IRepository<Loan>? _loans;
+    public IRepository<Loan> Loans => _loans ??= new Repository<Loan>(_context);
 
     public UnitOfWork(AppDbContext context)
     {

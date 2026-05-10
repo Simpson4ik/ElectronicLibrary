@@ -11,4 +11,5 @@ public interface IUnitOfWork : IDisposable
     IRepository<Book> Books { get; }
     IRepository<Reader> Readers { get; }
     Task<int> SaveChangesAsync();
+    IRepository<Loan> Loans { get; }
 }

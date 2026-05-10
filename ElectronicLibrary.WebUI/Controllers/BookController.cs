@@ -52,4 +52,23 @@ public class BookController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    /// <summary>
+    /// Обробляє POST-запит для повернення книги в бібліотеку.
+    /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> Return(int id)
+    {
+        try
+        {
+            await _bookService.ReturnBookAsync(id);
+            TempData["SuccessMessage"] = "Книгу успішно повернено до фонду бібліотеки!";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
 }   
