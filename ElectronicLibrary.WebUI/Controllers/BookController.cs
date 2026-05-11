@@ -2,6 +2,7 @@
 using ElectronicLibrary.Core.Strategies;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using ElectronicLibrary.Core.DTOs;
 
 namespace ElectronicLibrary.WebUI.Controllers;
 
@@ -69,6 +70,70 @@ public class BookController : Controller
             TempData["ErrorMessage"] = ex.Message;
         }
 
+        return RedirectToAction(nameof(Index));
+    }
+
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(BookDto bookDto)
+    {
+        if (ModelState.IsValid)
+        {
+            await _bookService.AddBookAsync(bookDto);
+            TempData["SuccessMessage"] = "Книгу успішно додано!";
+            return RedirectToAction(nameof(Index));
+        }
+        return View(bookDto);
+    }
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        var bookDto = await _bookService.GetBookDtoByIdAsync(id);
+        if (bookDto == null) return NotFound();
+
+        return View(bookDto);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, BookDto bookDto)
+    {
+        if (id != bookDto.Id) return BadRequest();
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                await _bookService.UpdateBookAsync(bookDto);
+                TempData["SuccessMessage"] = "Дані книги оновлено!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+        }
+        return View(bookDto);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        try
+        {
+            await _bookService.DeleteBookAsync(id);
+            TempData["SuccessMessage"] = "Книгу видалено з фонду.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+        }
         return RedirectToAction(nameof(Index));
     }
 }   
