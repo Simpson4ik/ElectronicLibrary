@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ElectronicLibrary.Core.Specifications;
 
 namespace ElectronicLibrary.Core.Interfaces
 {
@@ -8,6 +9,7 @@ namespace ElectronicLibrary.Core.Interfaces
     {
         Task<T?> GetByIdAsync(int id);
         Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> FindAsync(ISpecification<T> specification);
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(T entity);

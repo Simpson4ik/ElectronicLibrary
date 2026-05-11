@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ElectronicLibrary.Core.Interfaces;
+using ElectronicLibrary.Core.Specifications;
 
 
 namespace ElectronicLibrary.Infrastructure.Data
@@ -16,6 +17,11 @@ namespace ElectronicLibrary.Infrastructure.Data
         {
             _context = context;
             _dbSet = context.Set<T>();
+        }
+
+        public async Task<IEnumerable<T>> FindAsync(ISpecification<T> specification)
+        {
+            return await _dbSet.Where(specification.Criteria).ToListAsync();
         }
 
         public async Task<T?> GetByIdAsync(int id)

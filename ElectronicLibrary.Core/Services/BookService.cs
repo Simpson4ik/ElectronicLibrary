@@ -2,6 +2,7 @@
 using ElectronicLibrary.Core.Entities;
 using ElectronicLibrary.Core.Interfaces;
 using ElectronicLibrary.Core.Strategies;
+using ElectronicLibrary.Core.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +23,12 @@ public class BookService : IBookService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IEnumerable<Book>> GetBooksAsync(ISortStrategy sortStrategy)
+    public async Task<IEnumerable<Book>> GetBooksAsync(ISortStrategy sortStrategy, string? searchTerm = null, bool onlyAvailable = false)
     {
-        var books = await _unitOfWork.Books.GetAllAsync();
+        var searchSpec = new BookSearchSpecification(searchTerm, onlyAvailable);
+
+        var books = await _unitOfWork.Books.FindAsync(searchSpec);
+
         return sortStrategy.Sort(books);
     }
 

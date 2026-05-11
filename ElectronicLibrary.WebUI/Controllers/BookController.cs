@@ -20,15 +20,17 @@ public class BookController : Controller
         _bookService = bookService;
     }
 
-    public async Task<IActionResult> Index(string sortOrder = "title")
+    public async Task<IActionResult> Index(string sortOrder = "title", string? searchTerm = null, bool onlyAvailable = false)
     {
         ISortStrategy sortStrategy = sortOrder == "year"
             ? new YearSortStrategy()
             : new TitleSortStrategy();
 
-        var books = await _bookService.GetBooksAsync(sortStrategy);
+        var books = await _bookService.GetBooksAsync(sortStrategy, searchTerm, onlyAvailable);
 
         ViewBag.CurrentSort = sortOrder;
+        ViewBag.SearchTerm = searchTerm;
+        ViewBag.OnlyAvailable = onlyAvailable;
 
         return View(books);
     }

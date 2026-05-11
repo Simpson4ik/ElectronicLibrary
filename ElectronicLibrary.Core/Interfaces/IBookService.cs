@@ -11,16 +11,12 @@ namespace ElectronicLibrary.Core.Interfaces;
 /// </summary>
 public interface IBookService
 {
-    Task<IEnumerable<Book>> GetBooksAsync(ISortStrategy sortStrategy);
     Task BorrowBookAsync(int bookId);
 
     Task<BookDto?> GetBookDtoByIdAsync(int id);
     Task AddBookAsync(BookDto bookDto);
     Task UpdateBookAsync(BookDto bookDto);
     Task DeleteBookAsync(int id);
-
-    /// <summary>
-    /// Реєструє повернення книги в бібліотеку, закриваючи активний запис про видачу.
-    /// </summary>
+    Task<IEnumerable<Book>> GetBooksAsync(ISortStrategy sortStrategy, string? searchTerm = null, bool onlyAvailable = false);
     Task ReturnBookAsync(int bookId);
 }
