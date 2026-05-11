@@ -1,0 +1,50 @@
+﻿@model ElectronicLibrary.Core.DTOs.BookDto
+
+@{
+    ViewData["Title"] = "Додати книгу";
+}
+
+<h2>Додати нову книгу</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label">Назва</label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="Author" class="form-label">Автор</label>
+                <input asp-for="Author" class="form-control" />
+                <span asp-validation-for="Author" class="text-danger"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="PublicationYear" class="form-label">Рік видання</label>
+                <input asp-for="PublicationYear" class="form-control" type="number" />
+                <span asp-validation-for="PublicationYear" class="text-danger"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="Isbn" class="form-label">ISBN</label>
+                <input asp-for="Isbn" class="form-control" placeholder="Наприклад: 978-3-16-148410-0" />
+                <span asp-validation-for="Isbn" class="text-danger"></span>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Зберегти</button>
+                <a asp-action="Index" class="btn btn-secondary">Скасувати</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
