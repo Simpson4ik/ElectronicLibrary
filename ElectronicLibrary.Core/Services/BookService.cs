@@ -1,8 +1,9 @@
 ﻿using ElectronicLibrary.Core.DTOs;
 using ElectronicLibrary.Core.Entities;
 using ElectronicLibrary.Core.Interfaces;
-using ElectronicLibrary.Core.Strategies;
+using ElectronicLibrary.Core.Models;
 using ElectronicLibrary.Core.Specifications;
+using ElectronicLibrary.Core.Strategies;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,13 +24,17 @@ public class BookService : IBookService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IEnumerable<Book>> GetBooksAsync(ISortStrategy sortStrategy, string? searchTerm = null, bool onlyAvailable = false)
+    public async Task<PaginatedList<Book>> GetBooksAsync(ISortStrategy sortStrategy, string? searchTerm = null, bool onlyAvailable = false, int pageNumber = 1, int pageSize = 5)
     {
         var searchSpec = new BookSearchSpecification(searchTerm, onlyAvailable);
-
         var books = await _unitOfWork.Books.FindAsync(searchSpec);
 
-        return sortStrategy.Sort(books);
+        var sortedBooks = sortStrategy.Sort(books).ToList();
+
+        var count = sortedBooks.Count;
+        var items = sortedBooks.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+        return new PaginatedList<Book>(items, count, pageNumber, pageSize);
     }
 
     public async Task BorrowBookAsync(int bookId)

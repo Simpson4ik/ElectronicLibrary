@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ElectronicLibrary.Core.Entities.Book>
+﻿@model ElectronicLibrary.Core.Models.PaginatedList<ElectronicLibrary.Core.Entities.Book>
 
 @{
     ViewData["Title"] = "Каталог книг";
@@ -22,18 +22,6 @@
     </div>
 }
 
-<div class="mb-3 d-flex justify-content-between align-items-center">
-    <div>
-        <a asp-action="Create" class="btn btn-success">+ Додати нову книгу</a>
-    </div>
-    <div>
-        <span>Сортувати за: </span>
-        <a asp-action="Index" asp-route-sortOrder="title" class="btn btn-sm @(ViewBag.CurrentSort == "title" ? "btn-primary" : "btn-outline-primary")">Алфавітом</a>
-        <a asp-action="Index" asp-route-sortOrder="year" class="btn btn-sm @(ViewBag.CurrentSort == "year" ? "btn-primary" : "btn-outline-primary")">Роком видання</a>
-    </div>
-</div>
-
-
 <div class="card mb-4 mt-3">
     <div class="card-body bg-light">
         <form asp-action="Index" method="get" class="row g-3 align-items-center">
@@ -53,7 +41,7 @@
             </div>
             
             <div class="col-md-3 d-flex gap-2">
-                <button type="submit" class="btn btn-primary w-100"> Знайти</button>
+                <button type="submit" class="btn btn-primary w-100">🔍 Знайти</button>
                 <a asp-action="Index" class="btn btn-outline-secondary">Скинути</a>
             </div>
         </form>
@@ -62,7 +50,7 @@
 
 <div class="mb-3 d-flex justify-content-between align-items-center">
     <div>
-        <a asp-action="Create" class="btn btn-success"> Додати нову книгу</a>
+        <a asp-action="Create" class="btn btn-success">+ Додати нову книгу</a>
     </div>
     <div>
         <span>Сортувати за: </span>
@@ -92,7 +80,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var book in Model)
+        @foreach (var book in Model.Items)
         {
             <tr>
                 <td>@book.Title</td>
@@ -135,3 +123,37 @@
         }
     </tbody>
 </table>
+
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Навігація по сторінках" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item @(!Model.HasPreviousPage ? "disabled" : "")">
+                <a class="page-link" asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex - 1)"
+                   asp-route-sortOrder="@ViewBag.CurrentSort"
+                   asp-route-searchTerm="@ViewBag.SearchTerm"
+                   asp-route-onlyAvailable="@ViewBag.OnlyAvailable">Попередня</a>
+            </li>
+            
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.PageIndex ? "active" : "")">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-pageNumber="@i"
+                       asp-route-sortOrder="@ViewBag.CurrentSort"
+                       asp-route-searchTerm="@ViewBag.SearchTerm"
+                       asp-route-onlyAvailable="@ViewBag.OnlyAvailable">@i</a>
+                </li>
+            }
+
+            <li class="page-item @(!Model.HasNextPage ? "disabled" : "")">
+                <a class="page-link" asp-action="Index"
+                   asp-route-pageNumber="@(Model.PageIndex + 1)"
+                   asp-route-sortOrder="@ViewBag.CurrentSort"
+                   asp-route-searchTerm="@ViewBag.SearchTerm"
+                   asp-route-onlyAvailable="@ViewBag.OnlyAvailable">Наступна</a>
+            </li>
+        </ul>
+    </nav>
+}
