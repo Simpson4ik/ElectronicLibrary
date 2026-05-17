@@ -20,19 +20,19 @@ public class BookController : Controller
         _bookService = bookService;
     }
 
-    public async Task<IActionResult> Index(string sortOrder = "title", string? searchTerm = null, bool onlyAvailable = false)
+    public async Task<IActionResult> Index(string sortOrder = "title", string? searchTerm = null, bool onlyAvailable = false, int pageNumber = 1)
     {
         ISortStrategy sortStrategy = sortOrder == "year"
             ? new YearSortStrategy()
             : new TitleSortStrategy();
 
-        var books = await _bookService.GetBooksAsync(sortStrategy, searchTerm, onlyAvailable);
+        var paginatedBooks = await _bookService.GetBooksAsync(sortStrategy, searchTerm, onlyAvailable, pageNumber, 5);
 
         ViewBag.CurrentSort = sortOrder;
         ViewBag.SearchTerm = searchTerm;
         ViewBag.OnlyAvailable = onlyAvailable;
 
-        return View(books);
+        return View(paginatedBooks);
     }
     /// <summary>
     /// Обробляє POST-запит для видачі книги за її ідентифікатором.

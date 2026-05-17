@@ -3,6 +3,8 @@ using ElectronicLibrary.Core.Strategies;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ElectronicLibrary.Core.DTOs;
+using ElectronicLibrary.Core.Models;
+
 
 namespace ElectronicLibrary.Core.Interfaces;
 
@@ -17,6 +19,6 @@ public interface IBookService
     Task AddBookAsync(BookDto bookDto);
     Task UpdateBookAsync(BookDto bookDto);
     Task DeleteBookAsync(int id);
-    Task<IEnumerable<Book>> GetBooksAsync(ISortStrategy sortStrategy, string? searchTerm = null, bool onlyAvailable = false);
+    Task<PaginatedList<Book>> GetBooksAsync(ISortStrategy sortStrategy, string? searchTerm = null, bool onlyAvailable = false, int pageNumber = 1, int pageSize = 5);
     Task ReturnBookAsync(int bookId);
 }
